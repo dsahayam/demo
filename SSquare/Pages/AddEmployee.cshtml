@@ -1,0 +1,77 @@
+﻿@page
+@using HRSystems
+@using HRSystems.Pages
+@model AddEmployeeModel
+@{
+    ViewData["Title"] = "S-Squared Enterprises personal System";
+}
+<div>
+    <h1>Add Emplyess</h1>
+    <p>
+        <span>Manager</span>:
+        <select name="lManager">
+            <option value="">Select Manager</option>
+            <option value="1">Jeffrey Wells</option>
+            <option value="2">Victor Atkins</option>
+            <option value="3">Kelli Hamilton</option>
+        </select>
+    </p>
+    <p>
+        <form name="fAddEmployee" id="fAddEmployee" method="post">
+            <div>
+                <label>Employee ID:</label>
+                <input type="number" name="EmployeeId" id="EmployeeId" maxlength="5">
+            </div>
+            <div>
+                <label>First Name:</label>
+                <input type="text" name="FirstName" id="FirstName" maxlength="50">
+            </div>
+            <div>
+                <label>Last Name:</label>
+                <input type="text" name="LastName" id="LastName">
+            </div>
+            <div>
+                <label for="Roles">Employee Roles</label>
+                <select multiple id="Roles">
+                    <option value="100">Analyst</option>
+                    <option value="101">Accounting</option>
+                    <option value="102">Director</option>
+                    <option value="103">IT</option>
+                    <option value="104">Sales</option>
+                    <option value="105">Support</option>
+                </select>
+            </div>
+            <div>
+                <button class="btn btn-default" onclick="getSelectedRoles();">Submit</button>
+                <input type="hidden" name="EmployeeRoles" id="EmployeeRoles" />
+            </div>
+        </form>
+
+
+    </p>
+    <p>
+        <table>
+            <tr>
+                <td>EmployeeId</td>
+                <td>First Name</td>
+                <td>Last Name</td>
+            </tr>
+            @foreach (var item in Model.EmployeesList)
+            {
+                <tr>
+                    <td>@item.EmployeeId</td>
+                    <td>@item.FirstName</td>
+                    <td>@item.LastName</td>
+                </tr>
+            }
+        </table>
+    </p>
+</div>
+<script type="text/javascript">
+    function getSelectedRoles() {
+        var options = document.getElementById('Roles').selectedOptions;
+        var values = Array.from(options).map(({ value }) => value);
+        //alert(values);
+        document.getElementById('EmployeeRoles').value = values;
+    }
+</script>

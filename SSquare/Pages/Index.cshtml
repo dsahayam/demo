@@ -1,0 +1,58 @@
+﻿@page
+@using HRSystems
+@using HRSystems.Pages
+@model IndexModel
+@{
+    ViewData["Title"] = "S-Squared Enterprises personal System";
+}
+
+<div>
+    <h1>S-Square Emplyess List</h1>
+    <p>
+        <form name="fManagers" id="fManagers" method="post">
+            <span>Manager</span>: 
+            <select name="lManagers" id="lManagers" title="ManagersList">
+                <option value="">Select Manager</option>
+                <option value="1000">Jeffrey Wells</option>
+                <option value="1001">Victor Atkins</option>
+                <option value="1002">Kelli Hamilton</option>
+            </select>
+            <input type="hidden" name="EmployeeId" id="EmployeeId" />
+            <button class="btn btn-default" onclick="postManagersSelection();">Submit</button>
+        </form>
+    </p>
+    <p>
+        <a class="nav-link text-dark" asp-area="" asp-page="/AddEmployee"><b>Add Employee</b></a>
+    </p>
+    <p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">EmployeeID</th>
+                    <th scope="col">FirstName</th>
+                    <th scope="col">LastName</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.EmployeesList)
+                {
+                    <tr>
+                        <th scope="row">@item.EmployeeId</th>
+                        <td>@item.FirstName</td>
+                        <td>@item.LastName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </p>
+</div>
+<script type="text/javascript">
+    function postManagersSelection() { 
+        var e = document.getElementById("lManagers");
+        var managerId = e.options[e.selectedIndex].value;
+        //var text = e.options[e.selectedIndex].text;
+        //alert("manager id 111 - " + managerId);
+
+        document.getElementById("EmployeeId").value = managerId;
+    }
+</script>
