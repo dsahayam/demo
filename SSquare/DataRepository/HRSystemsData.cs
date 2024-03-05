@@ -1,7 +1,12 @@
 using HRSystems.DataModel;
+using HRSystems.Entity;
 using HRSystems.ViewModel;
+using Microsoft.EntityFrameworkCore;
+using SSquare_HRSystem.DataRepository;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 
 
 namespace HRSystems
@@ -11,7 +16,23 @@ namespace HRSystems
         public HRSystemsData() 
         { }
 
-        public List<EmployeeInfo> GetEmployeesInfo(int employeeId)
+        public List<EmployeeInfo> GetAllEmployeesInfo()
+        {
+            List<EmployeeInfo> listEmployeeInfo = [];
+            try
+            {
+                listEmployeeInfo = GetAllEmployeesInfoFromDB();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return listEmployeeInfo;
+        }
+
+
+        private List<EmployeeInfo> GetEmployeesInfo(int employeeId)
         {
             List<EmployeeInfo> listEmployeeInfo = [];
             List<Employee> listEmployees = [];
@@ -30,7 +51,6 @@ namespace HRSystems
 
                     listEmployeeInfo = Employees_Roles_Mapping(listEmployees, listEmployeeRoles);
                     //bool bEmployeesRolesMap = Employees_Roles_Mapping(listEmployees, listEmployeeRoles, listRoles);
-
                 }
                 else
                 {
@@ -58,9 +78,12 @@ namespace HRSystems
             {
                 if (employeeId == 0)
                 {
-                    throw new ArgumentException("EmployeeId was not passed - " + employeeId);
+                    throw new ArgumentException("GetManagerEmployeesAssociationInfo: EmployeeId was not passed - " + employeeId);
                 }
 
+                listEmployeeInfo = GetManagerEmployeesAssociationInfoFromDB(employeeId);
+
+                /*
                 listEmployees = GetAllEmployeesData();
                 managerEmployeesAssociationInfo = GetAllManagerEmployeesAssociation();
                 List<ManagerEmployees> managerEmployeesList = managerEmployeesAssociationInfo.Where(emp => emp.ManagerId == employeeId).ToList();
@@ -86,8 +109,30 @@ namespace HRSystems
                         }
                     }
                 }
+                */
             }
             catch (Exception) { throw;  }
+
+            return listEmployeeInfo;
+        }
+
+        public List<EmployeeInfo> AddEmployeeInfo(EmployeeInfo employeeInfo)
+        {
+            List<EmployeeInfo> listEmployeeInfo = [];
+            try
+            {
+                if (employeeInfo == null)
+                {
+                    throw new ArgumentNullException(nameof(employeeInfo));
+                }
+
+                int employeeId = AddEmployeeInfoInDB(employeeInfo);
+                listEmployeeInfo = GetAllEmployeesInfoFromDB();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
 
             return listEmployeeInfo;
         }
@@ -435,5 +480,173 @@ namespace HRSystems
 
             return listEmployees;
         }
+
+        //public DbContext GetDbContext(SqlConnection sqlConnection)
+        //{
+        //    DbContext dbContext = null;
+        //    var _dbContextOptionsBuilder = new DbContextOptionsBuilder<DbContext>();
+
+        //    if (sqlConnection != null)
+        //    {
+        //        var conn1 = _dbContextOptionsBuilder.  .UseSqlServer(sqlConnection);
+
+        //        dbContext = System.Activator.CreateInstance(typeof(DbContext), _dbContextOptionsBuilder.Options);
+        //    }
+
+        //    return dbContext;
+        //}
+
+        private List<Employee> GetEmployeesInfoFromDB(int employeeId)
+        {
+            List<Employee> employeeInfo = [];
+            try
+            {
+                if (employeeId == 0)
+                {
+                    throw new ArgumentException("GetEmployeesInfoFromDB: EmployeeId was not passed - " + employeeId);
+                }
+                List<Employee> listEmployees = GetAllEmployeesData();
+                employeeInfo = listEmployees.Where<Employee>(emp => emp.EmployeeId == employeeId).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return employeeInfo;
+        }
+
+        private List<EmployeeInfo> GetAllEmployeesInfoFromDB()
+        {
+            List<EmployeeInfo> listEmployeesInfo = new List<EmployeeInfo>();
+            try
+            {
+                HRSystemsContext hrSystemsContext = new HRSystemsContext();
+
+                string _procedureName = "[dbo].[GetAllEmployeesInfo]";
+
+                List<EmployeeEntity> listEmployeesEntity = hrSystemsContext.EmployeesEntity
+                                    .FromSqlRaw(@"EXEC" + _procedureName)
+                                    .ToListAsync().Result;
+
+                if (listEmployeesEntity != null)
+                {
+                    listEmployeesEntity.ForEach(empInfo =>
+                    {
+                        EmployeeInfo employeeInfo = new EmployeeInfo();
+                        employeeInfo.EmployeeId = empInfo.EmployeeId;
+                        employeeInfo.FirstName = empInfo.FirstName;
+                        employeeInfo.LastName = empInfo.LastName;
+                        listEmployeesInfo.Add(employeeInfo);
+                    });
+                }
+
+                /*
+                //List<EmployeeInfoEntity> listEmployeesInfoEntity = new List<EmployeeInfoEntity>();
+                //listEmployeesInfo = hrSystemsContext.EmployeesInfo.FromSql("dbo.GetAllEmployeesInfo").ToList();
+                //listEmployeesInfoEntity = hrSystemsContext.EmployeesInfoEntity
+                //                    .FromSqlRaw(@"EXEC" + _procedureName)
+                //                    .ToListAsync().Result;
+
+                if (listEmployeesInfoEntity != null)
+                {
+                    listEmployeesInfoEntity.ForEach(empInfo =>
+                    {
+                        EmployeeInfo employeeInfo = new EmployeeInfo();
+                        employeeInfo.EmployeeId = empInfo.EmployeeId;
+                        employeeInfo.FirstName = empInfo.FirstName;
+                        employeeInfo.LastName = empInfo.LastName;
+                        //employeeInfo.ListRoles = empInfo.ListRoles;
+                        empInfo.ListRoles.ForEach(role => { 
+                            Roles roles = new Roles();
+                            roles.RoleId = role.RoleId;
+                            roles.RoleName = role.RoleName;
+                            employeeInfo.ListRoles.Add(roles);
+                        });
+                        listEmployeesInfo.Add(employeeInfo);
+                    });
+                }
+                */
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return listEmployeesInfo;
+        }
+
+        private List<EmployeeInfo> GetManagerEmployeesAssociationInfoFromDB(int employeeId)
+        {
+            List<EmployeeInfo> listEmployeesInfo = new List<EmployeeInfo>();
+            try
+            {
+                HRSystemsContext hrSystemsContext = new HRSystemsContext();
+
+                string _procedureName = "[dbo].[GetAllEmployeesInfoForManager]";
+                List<Microsoft.Data.SqlClient.SqlParameter> sqlParam = new List<Microsoft.Data.SqlClient.SqlParameter> {
+                    new Microsoft.Data.SqlClient.SqlParameter("@EmployeeId",employeeId)
+                };
+
+                List<EmployeeEntity> listEmployeesEntity = hrSystemsContext.EmployeesEntity
+                                    .FromSqlRaw(@"EXEC" + _procedureName + "@EmployeeId", sqlParam.ToArray())
+                                    .ToListAsync().Result;
+
+                if (listEmployeesEntity != null)
+                {
+                    listEmployeesEntity.ForEach(empInfo =>
+                    {
+                        EmployeeInfo employeeInfo = new EmployeeInfo();
+                        employeeInfo.EmployeeId = empInfo.EmployeeId;
+                        employeeInfo.FirstName = empInfo.FirstName;
+                        employeeInfo.LastName = empInfo.LastName;
+                        listEmployeesInfo.Add(employeeInfo);
+                    });
+                }
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return listEmployeesInfo;
+        }
+        private int AddEmployeeInfoInDB(EmployeeInfo employeeInfo)
+        {
+            int noOfRows = 0;
+            try
+            {
+                HRSystemsContext hrSystemsContext = new HRSystemsContext();
+
+                string _procedureName = "[dbo].[AddEmployee]";
+
+                string arrRoles = String.Empty;
+                foreach (Roles role in employeeInfo.ListRoles)
+                {
+                    arrRoles += "," + role.RoleId;
+                }
+                arrRoles = arrRoles.Substring(1);
+
+                List<Microsoft.Data.SqlClient.SqlParameter> sqlParam = new List<Microsoft.Data.SqlClient.SqlParameter> {
+                    new Microsoft.Data.SqlClient.SqlParameter("@FirstName", employeeInfo.FirstName),
+                    new Microsoft.Data.SqlClient.SqlParameter("@LastName", employeeInfo.LastName),
+                    new Microsoft.Data.SqlClient.SqlParameter("@RoleIDs", arrRoles)
+                };
+
+                var result = hrSystemsContext.Database
+                                    .ExecuteSqlRaw(@"EXEC" + _procedureName + "@FirstName,@LastName,@RoleIDs", sqlParam.ToArray());
+
+                noOfRows = int.Parse(result.ToString());
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return noOfRows;
+        }
+
     }
 }

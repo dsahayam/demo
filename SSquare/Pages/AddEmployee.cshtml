@@ -6,8 +6,8 @@
     ViewData["Title"] = "S-Squared Enterprises personal System";
 }
 <div>
-    <h1>Add Emplyess</h1>
-    <p>
+    <h1>S-Square - Add Emplyess - Emplyess List</h1>
+@*     <p>
         <span>Manager</span>:
         <select name="lManager">
             <option value="">Select Manager</option>
@@ -15,13 +15,13 @@
             <option value="2">Victor Atkins</option>
             <option value="3">Kelli Hamilton</option>
         </select>
-    </p>
+    </p> *@
     <p>
         <form name="fAddEmployee" id="fAddEmployee" method="post">
-            <div>
+@*             <div>
                 <label>Employee ID:</label>
                 <input type="number" name="EmployeeId" id="EmployeeId" maxlength="5">
-            </div>
+            </div> *@
             <div>
                 <label>First Name:</label>
                 <input type="text" name="FirstName" id="FirstName" maxlength="50">
@@ -46,24 +46,26 @@
                 <input type="hidden" name="EmployeeRoles" id="EmployeeRoles" />
             </div>
         </form>
-
-
     </p>
     <p>
-        <table>
-            <tr>
-                <td>EmployeeId</td>
-                <td>First Name</td>
-                <td>Last Name</td>
-            </tr>
-            @foreach (var item in Model.EmployeesList)
-            {
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@item.EmployeeId</td>
-                    <td>@item.FirstName</td>
-                    <td>@item.LastName</td>
+                    <th scope="col">EmployeeID</th>
+                    <th scope="col">FirstName</th>
+                    <th scope="col">LastName</th>
                 </tr>
-            }
+            </thead>
+            <tbody>
+                @foreach (var item in Model.EmployeesList)
+                {
+                    <tr>
+                        <th scope="row">@item.EmployeeId</th>
+                        <td>@item.FirstName</td>
+                        <td>@item.LastName</td>
+                    </tr>
+                }
+            </tbody>
         </table>
     </p>
 </div>

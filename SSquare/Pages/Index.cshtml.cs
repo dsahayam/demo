@@ -30,7 +30,13 @@ public class IndexModel : PageModel
     {
         int emplyeeId = int.Parse(Request.Form["EmployeeId"].ToString());
 
-
-        EmployeesList = _hrSystemsProcess.GetManagerEmployeesAssociationInfo(emplyeeId);
+        if (emplyeeId == 0)
+        {
+            EmployeesList = _hrSystemsProcess.GetAllEmployeesInfo();
+        }
+        else
+        {
+            EmployeesList = _hrSystemsProcess.GetManagerEmployeesAssociationInfo(emplyeeId);
+        }
     }
 }

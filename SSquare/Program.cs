@@ -1,7 +1,16 @@
+using HRSystems;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using SSquare_HRSystem.DataRepository;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+builder.Services.AddScoped<IHRSystemsData, HRSystemsData>();
+builder.Services.AddScoped<IHRSystemsProcess, HRSystemsProcess>();
+//builder.Services.AddDbContext<HRSystemsContext>(options => options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=master;Trusted_Connection=True;"));
 
 var app = builder.Build();
 

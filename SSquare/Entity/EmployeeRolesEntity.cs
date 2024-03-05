@@ -1,6 +1,9 @@
-namespace HRSystems.DataModel
+using Microsoft.EntityFrameworkCore;
+
+namespace HRSystems.Entity
 {
-    public class EmployeeRoles
+    [Keyless]
+    public class EmployeeRolesEntity
     {
         public int EmployeeRoleId { get; set; }
         public int EmployeeId { get; set; }

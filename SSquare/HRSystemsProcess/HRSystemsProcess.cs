@@ -18,29 +18,17 @@ namespace HRSystems
 
         public List<EmployeeInfo> GetAllEmployeesInfo()
         {
-            //List<EmployeeInfo> listEmployeeInfo = [];
-            return new List<EmployeeInfo>();
+            return _hrSystemsData.GetAllEmployeesInfo();
         }
 
         public List<EmployeeInfo> GetManagerEmployeesAssociationInfo(int employeeId)
         {
-            //List<EmployeeInfo> listEmployeeInfo = [];
-            return new List<EmployeeInfo>();
-        }
-
-        List<EmployeeInfo> IHRSystemsProcess.GetAllEmployeesInfo()
-        {
-            throw new NotImplementedException();
-        }
-
-        List<EmployeeInfo> IHRSystemsProcess.GetManagerEmployeesAssociationInfo(int employeeId)
-        {
             return _hrSystemsData.GetManagerEmployeesAssociationInfo(employeeId);
         }
 
-        public EmployeeInfo AddEmployeeInfo(EmployeeInfo employeeInfo)
+        public List<EmployeeInfo> AddEmployeeInfo(EmployeeInfo employeeInfo)
         {
-            throw new NotImplementedException();
+            return _hrSystemsData.AddEmployeeInfo(employeeInfo);
         }
     }
 }

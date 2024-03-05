@@ -1,8 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
-namespace HRSystems.DataModel
+namespace HRSystems.Entity
 {
-    public class ManagerEmployees
+    [Keyless]
+    public class ManagerEmployeesEntity
     {
         public int ManagerEmployeeId { get; set; }
         public int EmployeeId { get; set; }

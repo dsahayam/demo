@@ -11,6 +11,6 @@ namespace HRSystems
 
         public List<EmployeeInfo> GetManagerEmployeesAssociationInfo(int employeeId);
 
-        public EmployeeInfo AddEmployeeInfo(EmployeeInfo employeeInfo);
+        public List<EmployeeInfo> AddEmployeeInfo(EmployeeInfo employeeInfo);
     }
 }
